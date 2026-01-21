@@ -8,8 +8,8 @@ variables:
   GRADER_REF: "main"             
   ASSIGNMENT: "A1"
   # CHANGE ONLY THE NEXT TWO LINES, NOTHING ELSE
-  STUDENT_ID: "YOUR_USERNAME"   # TODO: Put your username here
-  STUDENT_REPO: "YOUR_USERNAME/A1" # TODO: Put your repo path here (format: studentID/a1_project)
+  STUDENT_ID: "mallen31"   # TODO: Put your username here
+  STUDENT_REPO: "mallen31/A1" # TODO: Put your repo path here (format: studentID/a1_project)
   STUDENT_BRANCH: "main"
 
 trigger_a1_grader:
