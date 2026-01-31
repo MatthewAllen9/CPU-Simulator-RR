@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-//Process:  Holds arrive, burst, remaining, first run and completion times
+//Process: Holds pid, arrive, burst, remaining, first run and completion times
 typedef struct{
     int pid;
     int arrivalTime;
@@ -96,6 +96,8 @@ int main(int argc, char *argv[]) {
     int next = 0;
     int current = -1;
     int qRemaining = 0;
+    int lastPid = -1;
+    int wasIdle = 1;
 
     //Create variables to store combined values for avgs
     double totalTurnaround = 0.0;
@@ -115,6 +117,7 @@ int main(int argc, char *argv[]) {
                     time = processes[next].arrivalTime;
                 }
             }
+            wasIdle = 1;
         }
 
         //Add all processes that have arrived
@@ -126,11 +129,29 @@ int main(int argc, char *argv[]) {
 
         //Check if CPU is idle and there is a process ready
         if (current == -1 && !isEmpty(&readyQ)){
-            //Set current to pid of the first process in the queue
-            current = dequeue(&readyQ);
-            qRemaining = quantum;
+            //Set next pid to pid of the first process in the queue
+            int nextPid = dequeue(&readyQ);
 
-            //Check if process is starting now
+            //Check if the CPU was active and a new process is starting rather than the same
+            if (!wasIdle && lastPid != -1 && nextPid != lastPid && cSwitch > 0){
+                //Sim through the context switch and add new processes that arrive
+                for (int k = 0; k < cSwitch; k++){
+                    time++;
+
+                    //Add new proceses to ready queue
+                    while (next < processCount && processes[next].arrivalTime <= time){
+                        enqueue(&readyQ, processes[next].pid);
+                        next++;
+                    }
+                }
+            }
+
+            //Continue after context switch
+            current = nextPid;
+            qRemaining = quantum;
+            wasIdle = 0;
+
+           //Check if process is starting now
             if (processes[current].firstRunTime == -1){
                 //Store first run time
                 processes[current].firstRunTime = time;
@@ -171,12 +192,14 @@ int main(int argc, char *argv[]) {
 
             //Increment finished processes and set CPU to idle
             finished++;
+            lastPid = current;
             current = -1;
-
+            wasIdle = 1;
         } 
         else if (qRemaining == 0){
             //Preempt and add process to the back of the queue
             enqueue(&readyQ, current);
+            lastPid = current;
             current = -1;
         }
     }
@@ -267,7 +290,7 @@ Process *readProcesses(const char *filename, int *processCount){
 Queue createQueue(int maxSize){
     Queue q;
     q.pids = malloc(sizeof(int) * maxSize);
-    if (q.pids == NULL) {
+    if (q.pids == NULL){
         printf("Queue memory allocation failed.\n");
         exit(EXIT_FAILURE);
     }
@@ -302,7 +325,7 @@ void enqueue(Queue *q, int pid){
 
 //Pop off first process
 int dequeue(Queue *q){
-    if (isEmpty(q)) {
+    if (isEmpty(q)){
         printf("Queue is already empty\n");
         exit(EXIT_FAILURE);
     }
