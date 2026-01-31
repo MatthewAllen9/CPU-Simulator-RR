@@ -110,7 +110,7 @@ int main(int argc, char *argv[]) {
             //Check to ensure there is a next process
             if (next < processCount){
                 if (time < processes[next].arrivalTime){
-                    //JUMP
+                    //Jump to next process arrival time
                     time = processes[next].arrivalTime;
                 }
             }

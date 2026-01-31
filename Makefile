@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS = -Wall -Wextra -std=c11 -02
+CFLAGS = -Wall -Wextra -std=c11
 
 all: rr
 
