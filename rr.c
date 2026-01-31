@@ -80,11 +80,12 @@ int main(int argc, char *argv[]) {
     int processCount = 0;
     Process *processes = readProcesses(argv[1], &processCount);
 
-    if (processCount == 0) {
-        printf("0.00 0.00 0.00\n");
+    //Print nothing for an empty file
+    if (processCount == 0){
         free(processes);
         return 0;
     }
+
 
     //Create queue for ready processes
     Queue readyQ = createQueue(processCount);
