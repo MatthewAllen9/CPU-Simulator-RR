@@ -194,7 +194,11 @@ int main(int argc, char *argv[]) {
             finished++;
             lastPid = current;
             current = -1;
-            wasIdle = 1;
+
+            //Check if the ready queue is empty
+            if (isEmpty(&readyQ)){
+                wasIdle = 1;
+            }
         } 
         else if (qRemaining == 0){
             //Preempt and add process to the back of the queue
