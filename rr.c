@@ -18,6 +18,8 @@ Process *readProcesses(const char *filename, int *processCount);
 //Queue: FIFO data structure to store Processes
 typedef struct{
     int *pids;
+    int head;
+    int tail;
     int size;
     int max;
 }Queue;
@@ -298,6 +300,8 @@ Queue createQueue(int maxSize){
         printf("Queue memory allocation failed.\n");
         exit(EXIT_FAILURE);
     }
+    q.head = 0;
+    q.tail = 0;
     q.size = 0;
     q.max = maxSize;
     return q;
@@ -314,7 +318,6 @@ int isFull(Queue *q){
     return q->size == q->max;
 }
 
-
 //Add process to end of queue
 void enqueue(Queue *q, int pid){
     if (isFull(q)){
@@ -322,7 +325,8 @@ void enqueue(Queue *q, int pid){
         exit(EXIT_FAILURE);
     }
 
-    q->pids[q->size] = pid;
+    q->pids[q->tail] = pid;
+    q->tail = (q->tail + 1) % q->max;
     q->size++;
 }
 
@@ -334,14 +338,8 @@ int dequeue(Queue *q){
         exit(EXIT_FAILURE);
     }
 
-    int first = q->pids[0];
-
-    //Shift all elements left
-    for (int i = 1; i < q->size; i++){
-        q->pids[i - 1] = q->pids[i];
-    }
-
+    int first = q->pids[q->head];
+    q->head = (q->head + 1) % q->max;
     q->size--;
-
     return first;
 }
