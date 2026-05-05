@@ -1,7 +1,4 @@
-## CIS3110 A1 CPU Simulator Round Robin
-## Matthew Allen
-## 1313528 mallen31
-
+## CPU Simulator Round Robin
 
 ## Description:
 
